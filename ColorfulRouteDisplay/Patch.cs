@@ -38,19 +38,25 @@ public class Patch
 
     [HarmonyPatch(typeof(Aircraft), "ShowPath")]
     [HarmonyPostfix]
-    public static void AircraftShowPathPostfix(Aircraft __instance, List<Vector3> path, bool success = true)
+    public static void AircraftShowPathPostfix(Aircraft __instance, List<Vector3> path, bool success)
     {
         Func<Vector3, float> lengthCalculator = path.Count > 100 ? ((Vector3 vec) => Mathf.Abs(vec.x) + Mathf.Abs(vec.y)) : ((Vector3 vec) => vec.magnitude);
         float length = GenerateDelta(path).Sum(lengthCalculator);
 
         var colorKeys = GenerateGradientColorKeys(length);
         if (!success)
-            colorKeys = [colorKeys[^1] with { time = 0f }, colorKeys[^1] with { time = 1f }];
-        __instance.LandingGuideLine.SetColorGradient(new Gradient()
         {
-            colorKeys = GenerateGradientColorKeys(length),
+            colorKeys = [
+                new GradientColorKey(colorKeys[^1].color, 0f),
+                new GradientColorKey(colorKeys[^1].color, 1f),
+            ];
+        }
+
+        __instance.LandingGuideLine.colorGradient = new Gradient()
+        {
+            colorKeys = colorKeys,
             alphaKeys = __instance.LandingGuideLine.colorGradient.alphaKeys
-        });
+        };
     }
 
     public static GradientColorKey[] GenerateGradientColorKeys(float length)
