@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorfulRouteDisplay", "Col
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VerticalLevel", "VerticalLevel\VerticalLevel.csproj", "{D890E9A0-272F-4E28-9A56-190AB3B54202}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiveMeAnUpgrade", "GiveMeAnUpgrade\GiveMeAnUpgrade.csproj", "{78668B98-E3EA-477B-9BD3-A9A84283EB0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D890E9A0-272F-4E28-9A56-190AB3B54202}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D890E9A0-272F-4E28-9A56-190AB3B54202}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D890E9A0-272F-4E28-9A56-190AB3B54202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78668B98-E3EA-477B-9BD3-A9A84283EB0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78668B98-E3EA-477B-9BD3-A9A84283EB0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78668B98-E3EA-477B-9BD3-A9A84283EB0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78668B98-E3EA-477B-9BD3-A9A84283EB0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

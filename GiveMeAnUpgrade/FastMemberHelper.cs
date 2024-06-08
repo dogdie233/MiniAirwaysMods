@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace VerticalLevel;
+namespace GiveMeAnUpgrade;
 
 public static class FastMemberHelper<TClass, TValue> where TClass : class
 {
