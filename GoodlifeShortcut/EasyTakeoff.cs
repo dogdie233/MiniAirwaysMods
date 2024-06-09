@@ -6,46 +6,36 @@ namespace GoodlifeShortcut;
 
 public class EasyTakeoffBehaviour : MonoBehaviour
 {
-    public static List<KeyCode> shortcuts = new()
-    {
-        KeyCode.Q, KeyCode.W, KeyCode.E, KeyCode.R
-    };
-    private static bool occupied = false;
-
-    public static bool QwQ
-    {
-        set => occupied = value;
-    }
-
     private void Update()
     {
-        if (TakeoffTaskManager.Instance == null)
+        if (TakeoffTaskManager.Instance is not { } takeoffTaskManager)
             return;
-
-        for (var i = 0; i < shortcuts.Count && i < TakeoffTaskManager.Instance.Aprons.Count; i++)
+        
+        var shortcuts = Plugin.ApronShortcuts;
+        foreach (var u in shortcuts)
         {
-            if (!Input.GetKeyUp(shortcuts[i]))
+            if (u.apronIndex >= takeoffTaskManager.Aprons.Count || !Input.GetKeyUp(u.key))
                 continue;
 
-            var apron = TakeoffTaskManager.Instance.Aprons[i];
+            var apron = takeoffTaskManager.Aprons[u.apronIndex];
             if (!apron.Interactable || !apron.isOccupied || apron.takeoffTask == null || !apron.takeoffTask.inCommand)
                 continue;
-
-            Plugin.MyLogger.LogInfo($"Use shortcut key {shortcuts[i]} to select apron{i}");
+            
+            Plugin.MyLogger.LogInfo($"Use shortcut key {u.key} to select apron {u.apronIndex}");
             apron.takeoffTask.OnPointUp();
             break;
         }
 
-        for (var i = 0; i < shortcuts.Count && i < TakeoffTaskManager.Instance.Aprons.Count; i++)
+        foreach (var u in shortcuts)
         {
-            if (!Input.GetKeyDown(shortcuts[i]))
+            if (u.apronIndex >= takeoffTaskManager.Aprons.Count || !Input.GetKeyDown(u.key))
                 continue;
 
-            var apron = TakeoffTaskManager.Instance.Aprons[i];
+            var apron = takeoffTaskManager.Aprons[u.apronIndex];
             if (!apron.Interactable || apron.takeoffTask == null || apron.takeoffTask.inCommand)
                 continue;
 
-            Plugin.MyLogger.LogInfo($"Use shortcut key {shortcuts[i]} to takeoff apron{i}");
+            Plugin.MyLogger.LogInfo($"Use shortcut key {u.key} to takeoff apron {u.apronIndex}");
             apron.takeoffTask.OnPointDown();
             break;
         }
