@@ -46,7 +46,7 @@ public class Plugin : BaseUnityPlugin
 
     internal static void TryGetAnUpgrade()
     {
-        if (UpgradeManager.Instance == null)
+        if (UpgradeManager.Instance == null || UpgradeManager.Instance.HasShowingUpgradePanel)
             return;
 
         UpgradeManager.Instance.EnableUpgrade();
