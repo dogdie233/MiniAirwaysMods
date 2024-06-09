@@ -4,15 +4,14 @@ using BepInEx.Logging;
 using HarmonyLib;
 
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace GiveMeAnUpgrade;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Plugin : BaseUnityPlugin
 {
-    public static ManualLogSource MyLogger { get; private set; }
-    public static Sprite UpgradeButtonSprite { get; set; }
+    public static ManualLogSource MyLogger { get; private set; } = null!;
+    public static Sprite UpgradeButtonSprite { get; set; } = null!;
 
     private void Awake()
     {
@@ -26,6 +25,11 @@ public class Plugin : BaseUnityPlugin
         var harmony = new Harmony(PluginInfo.PLUGIN_GUID);
         harmony.PatchAll();
 
+        InputTools.AddBinding(BindingDescriptionBuilder
+            .Create(KeyCode.C, TryGetAnUpgrade)
+            .NotAllowModifierKeys()
+            .Build());
+
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
     }
 
@@ -33,5 +37,19 @@ public class Plugin : BaseUnityPlugin
     {
         Destroy(UpgradeButtonSprite.texture);
         Destroy(UpgradeButtonSprite);
+    }
+
+    private void Update()
+    {
+        InputTools.PoolEvent();
+    }
+
+    internal static void TryGetAnUpgrade()
+    {
+        if (UpgradeManager.Instance == null)
+            return;
+
+        UpgradeManager.Instance.EnableUpgrade();
+        MyLogger.LogInfo("Get a upgrade");
     }
 }

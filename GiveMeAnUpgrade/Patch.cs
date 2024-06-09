@@ -25,7 +25,7 @@ public class Patch
         button.gameObject.name = "UpgradeButton";
         button.onClick.RemoveAllListeners();
         button.onClick.m_PersistentCalls.Clear();
-        button.onClick.AddListener(UpgradeManager.Instance, AccessTools.Method(typeof(UpgradeManager), nameof(UpgradeManager.EnableUpgrade)));
+        button.onClick.AddListener(Plugin.TryGetAnUpgrade);
 
         var trigger = button.GetComponent<EventTrigger>();
         foreach (var entry in trigger.triggers)
@@ -62,7 +62,6 @@ public class Patch
             tweens[0].onComplete += () =>
             {
                 var upgradeButton = ___fastSpeedButtonCanvasGroup.transform.parent.Find("UpgradeButton");
-                Plugin.MyLogger.LogInfo($"{upgradeButton == null}");
                 if (upgradeButton == null)
                     return;
 
@@ -129,7 +128,6 @@ public class Patch
     private static void FindTweenAndAppendCallback(object target, TweenCallback callback)
     {
         var tweens = DOTween.TweensByTarget(target);
-        Debug.Log($"find {tweens.Count}");
         foreach (var tween in tweens)
         {
             if (tween.onComplete == null)
