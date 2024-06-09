@@ -2,16 +2,11 @@
 
 using HarmonyLib;
 
-using Mono.Cecil;
-
-using System;
 using System.Collections;
-using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
-using static UnityEngine.GraphicsBuffer;
 
 namespace GiveMeAnUpgrade;
 
@@ -29,24 +24,24 @@ public class Patch
             rawImage.texture = Plugin.UpgradeButtonSprite.texture;
         button.gameObject.name = "UpgradeButton";
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(OnUpgradeButtonClick);
-    }
+        button.onClick.m_PersistentCalls.Clear();
+        button.onClick.AddListener(UpgradeManager.Instance, AccessTools.Method(typeof(UpgradeManager), nameof(UpgradeManager.EnableUpgrade)));
 
-    private static void FindTweenAndAppendCallback(object target, TweenCallback callback)
-    {
-        var tweens = DOTween.TweensByTarget(target);
-        Debug.Log($"find {tweens.Count}");
-        foreach (var tween in tweens)
+        var trigger = button.GetComponent<EventTrigger>();
+        foreach (var entry in trigger.triggers)
         {
-            if (tween.onComplete == null)
-                return;
-
-            tween.onComplete += callback;
+            if (entry.eventID == EventTriggerType.PointerExit)
+            {
+                entry.callback.m_PersistentCalls.Clear();
+                entry.callback.AddListener(_ => __instance.OnUIExit(button.gameObject));
+            }
+            else if (entry.eventID == EventTriggerType.PointerEnter)
+            {
+                entry.callback.m_PersistentCalls.Clear();
+                entry.callback.AddListener(_ => __instance.OnUIEnter(button.gameObject));
+            }
         }
     }
-
-    private static TweenCallback Holyshit(object target, TweenCallback callback)
-        => () => FindTweenAndAppendCallback(target, callback);
 
     [HarmonyPatch(typeof(ClockController), "ClockSubButtonsShowCoroutine")]
     [HarmonyPostfix]
@@ -82,11 +77,11 @@ public class Patch
         if (result.Current != null)
         {
             next = result.MoveNext();
-            var upgradeButton = ___fastSpeedButtonCanvasGroup.transform.parent.Find("UpgradeButton");
-            if (upgradeButton != null)
+            var upgradeButtonKey = ___fastSpeedButtonCanvasGroup.transform.parent.Find("UpgradeButton/Image/Key");
+            if (upgradeButtonKey != null)
             {
-                upgradeButton.GetComponent<CanvasGroup>().DOFade(1f, 0.3f).SetUpdate(true);
-                ((RectTransform)upgradeButton.transform).DOAnchorPosX(-100f, 0.3f, false).SetUpdate(true);
+                upgradeButtonKey.GetComponent<CanvasGroup>().DOFade(1f, 0.3f).SetUpdate(true);
+                ((RectTransform)upgradeButtonKey.transform).DOAnchorPosX(-100f, 0.3f, false).SetUpdate(true);
             }
             if (next)
                 yield return result.Current;
@@ -131,11 +126,19 @@ public class Patch
         }
     }
 
-    private static void OnUpgradeButtonClick()
+    private static void FindTweenAndAppendCallback(object target, TweenCallback callback)
     {
-        if (UpgradeManager.Instance == null)
-            return;
+        var tweens = DOTween.TweensByTarget(target);
+        Debug.Log($"find {tweens.Count}");
+        foreach (var tween in tweens)
+        {
+            if (tween.onComplete == null)
+                return;
 
-        UpgradeManager.Instance.EnableUpgrade();
+            tween.onComplete += callback;
+        }
     }
+
+    private static TweenCallback Holyshit(object target, TweenCallback callback)
+        => () => FindTweenAndAppendCallback(target, callback);
 }
