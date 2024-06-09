@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 
 using UnityEngine;
@@ -51,11 +52,10 @@ public class AircraftPatch
     [HarmonyPatch(typeof(Aircraft), "OnTriggerEnter2D", [typeof(Collider2D)])]
     [HarmonyPatch(typeof(Aircraft), "OnTriggerStay2D", [typeof(Collider2D)])]
     [HarmonyTranspiler]
-    public static IEnumerable<CodeInstruction> TranspileAircraftTCAS(IEnumerable<CodeInstruction> instructions)
+    public static IEnumerable<CodeInstruction> TranspileAircraftTCAS(IEnumerable<CodeInstruction> instructions, MethodBase original)
     {
         var method = AccessTools.Method(typeof(Aircraft), nameof(Aircraft.EnableVisualWarning));
         var hijack = AccessTools.Method(typeof(AircraftPatch), nameof(HijackEnableVisualWarning));
-        Plugin.MyLogger.LogWarning(hijack.FullDescription());
         foreach (var instruction in instructions)
         {
             if (instruction.Calls(method))
@@ -65,7 +65,7 @@ public class AircraftPatch
             }
             yield return instruction;
         }
-        Plugin.MyLogger.LogInfo("Patching Aircraft Trigger Method");
+        Plugin.MyLogger.LogInfo($"Hijacking method {original.Name} for Aircraft to implement TCAS");
     }
 
     public static void HijackEnableVisualWarning(Aircraft instance, GameObject other, bool isAircraftWarner = false)
