@@ -35,8 +35,8 @@ public class Plugin : BaseUnityPlugin
         var keysWithIndex = Config.Bind(
             "General",
             "ApronShortcutKey",
-            "Z,X",
-            "每个的停机坪的快捷键\n使用[空]则为跳过此位置的停机坪\n例如：Z,,X表示Z选择第一位停机坪，X表示选择第三位停机坪"
+            "Q,W",
+            "每个的停机坪的快捷键\n使用[空]则为跳过此位置的停机坪\n例如：Q,,W表示按下Q选择第一位停机坪，按下W选择第三位停机坪"
         ).Value.Split(',').Index().Where(u => !string.IsNullOrEmpty(u.element));
 
         foreach (var u in keysWithIndex)
